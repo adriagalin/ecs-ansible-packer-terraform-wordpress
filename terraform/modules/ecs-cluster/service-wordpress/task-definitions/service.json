@@ -1,0 +1,32 @@
+[
+  {
+    "name": "${name}",
+    "essential": true,
+    "memory": ${memory},
+    "cpu": ${cpu},
+    "image": "${repository_url}:${image_tag}",
+    "command": [
+      "apachectl", "-D", "FOREGROUND"
+    ],
+    "environment": [
+      { "name": "WORDPRESS_DB_HOST", "value": "${wordpress_db_host}" },
+      { "name": "WORDPRESS_DB_NAME", "value": "${wordpress_db_name}" },
+      { "name": "WORDPRESS_DB_USER", "value": "${wordpress_db_user}" },
+      { "name": "WORDPRESS_DB_PASSWORD", "value": "${wordpress_db_password}" }
+    ],
+    "mountPoints": [
+      {
+        "ContainerPath": "${container_path}",
+        "SourceVolume": "${source_volume}",
+        "ReadOnly": false
+      }
+    ],
+    "portMappings": [
+      {
+        "hostPort": ${host_port},
+        "containerPort": ${container_port},
+        "protocol": "${protocol}"
+      }
+    ]
+  }
+]
