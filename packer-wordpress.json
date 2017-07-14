@@ -1,0 +1,59 @@
+{
+	"variables": {
+    "aws_access_key_id": "{{env `AWS_ACCESS_KEY_ID`}}",
+    "aws_secret_access_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
+		"ansible_version": "2.3.1.0",
+		"ansible_playbook_dir": "ansible",
+		"ansible_playbook_file": "ansible/playbooks/wordpress.yml",
+		"docker_base_image": "ubuntu:16.04",
+    "docker_repository": "{{env `DOCKER_REPOSITORY`}}",
+		"docker_image_version": "{{env `IMAGE_VERSION`}}",
+    "wordpress_version": "4.8"
+	},
+	"builders":[{
+		"type": "docker",
+		"image": "{{user `docker_base_image`}}",
+		"commit": true,
+    "changes": [
+      "ENTRYPOINT [\"/opt/entrypoint.sh\"]",
+      "CMD [\"apachectl\", \"-D\",  \"FOREGROUND\"]"
+    ]
+	}],
+	"provisioners": [
+    {
+      "type": "shell-local",
+      "command": "make ansible-requirements"
+    },
+		{
+			"type": "shell",
+			"script": "scripts/ansible.sh"
+		},
+		{
+			"type": "ansible-local",
+			"playbook_dir": "{{user `ansible_playbook_dir`}}",
+			"playbook_file": "{{user `ansible_playbook_file`}}",
+      "staging_directory": "/tmp/ansible",
+			"extra_arguments": [ "-vv --extra-vars \"ag_wordpress.version={{user `wordpress_version`}}\"" ]
+		},
+    {
+      "type": "shell",
+      "script": "scripts/cleanup.sh"
+    }
+	],
+	"post-processors": [
+		[
+			{
+				"type": "docker-tag",
+				"repository": "{{user `docker_repository`}}",
+				"tag": "{{user `docker_image_version`}}"
+			},
+      {
+        "type": "docker-push",
+        "ecr_login": true,
+        "aws_access_key": "{{user `aws_access_key_id`}}",
+        "aws_secret_key": "{{user `aws_secret_access_key`}}",
+        "login_server": "https://{{user `docker_repository`}}"
+      }
+		]
+	]
+}
