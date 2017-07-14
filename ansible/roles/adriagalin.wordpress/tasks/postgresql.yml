@@ -1,0 +1,43 @@
+---
+- name: wordpress | Install postgresql client
+  apt:
+    name: postgresql-client-{{ ag_wordpress_database_pgsql.version }}
+    state: latest
+    update_cache: yes
+  when: ag_wordpress_database_pgsql.external or ag_wordpress_database_pgsql.install
+
+- name: wordpress | Install postgresql server
+  apt:
+    name: postgresql-{{ ag_wordpress_database_pgsql.version }}
+    state: latest
+    update_cache: yes
+  when: not ag_wordpress_database_pgsql.external and ag_wordpress_database_pgsql.install
+
+- name: catchet | Update postgresql root password for all root accounts
+  postgresql_user:
+    name: root
+    host: "{{ item }}"
+    password: "root"
+    priv: "*.*:ALL,GRANT"
+  with_items:
+    - "{{ ansible_hostname }}"
+    - 127.0.0.1
+    - ::1
+    - localhost
+  when: not ag_wordpress_database_pgsql.external and ag_wordpress_database_pgsql.install
+
+- name: wordpress | Create wordpress postgresql database
+  postgresql_db:
+    name: "{{ ag_wordpress_database.dbname }}"
+    encoding: "UTF-8"
+    state: present
+  when: not ag_wordpress_database_pgsql.external and ag_wordpress_database_pgsql.install
+
+- name: wordpress | Create wordpress postgresql user
+  postgresql_user:
+    db: "{{ ag_wordpress_database.dbname }}"
+    name: "{{ ag_wordpress_database.username }}"
+    password: "{{ ag_wordpress_database.secret }}"
+    priv: "ALL"
+    state: present
+  when: not ag_wordpress_database_pgsql.external and ag_wordpress_database_pgsql.install

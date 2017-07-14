@@ -1,0 +1,68 @@
+---
+- name: wordpress | Download the wordpress source
+  get_url:
+    url: "https://wordpress.org/wordpress-{{ ag_wordpress.version }}.tar.gz"
+    dest: /tmp/wordpress.tar.gz
+    validate_certs: no
+    checksum: "{{ ag_wordpress.checksum }}"
+
+- name: wordpress | Create base wordpress dir
+  file:
+    path: "{{ ag_wordpress.basedir }}"
+    owner: www-data
+    group: www-data
+    recurse: yes
+    state: directory
+
+- name: wordpress | Create base wordpress dir
+  file:
+    path: "/tmp/wordpress"
+    owner: www-data
+    group: www-data
+    recurse: yes
+    state: directory
+  when: ag_wordpress.docker_env
+
+- name: wordpress | Extract wordpress
+  command: /bin/tar xvf /tmp/wordpress.tar.gz -C {{ ag_wordpress.basedir }} --strip-components=1 creates={{ ag_wordpress.basedir }}/index.php
+  when: not ag_wordpress.docker_env
+
+- name: wordpress | Extract wordpress
+  command: /bin/tar xvf /tmp/wordpress.tar.gz -C /tmp/wordpress --strip-components=1 creates=/tmp/wordpress/index.php
+  when: ag_wordpress.docker_env
+
+- name: wordpress | Removed tmp wordpress dir
+  file:
+    path: /tmp/wordpress.tar.gz
+    state: absent
+
+- name: wordpress | Get random salts
+  local_action: command curl https://api.wordpress.org/secret-key/1.1/salt/
+  register: "ag_wordpress_salt"
+
+- name: wordpress | Set wordpress.conf
+  template:
+    src: "wp-config.php.j2"
+    dest: "{{ ag_wordpress.basedir }}/wp-config.php"
+    owner: www-data
+    group: www-data
+  notify: restart-apache2
+  when: not ag_wordpress.docker_env
+
+- name: wordpress | Set wordpress.conf
+  template:
+    src: "wp-config.php.j2"
+    dest: "/tmp/wordpress/wp-config.php"
+    owner: www-data
+    group: www-data
+  notify: restart-apache2
+  when: ag_wordpress.docker_env
+
+- name: wordpress | Set docker entrypoint
+  template:
+    src: "docker.entrypoint.sh.j2"
+    dest: "/opt/entrypoint.sh"
+    owner: root
+    group: root
+    mode: '777'
+  when: ag_wordpress.docker_env

@@ -1,0 +1,21 @@
+<VirtualHost *:80>
+    ServerName {{ ag_wordpress_apache.servername }}
+    ServerAlias {{ ag_wordpress_apache.serveralias }}
+    # Make this the same as ServerName
+    DocumentRoot "{{ ag_wordpress.basedir }}"
+    ErrorLog /var/log/apache2/error.log
+    CustomLog /var/log/apache2/access.log combined
+
+{% if ag_wordpress_apache.external_load_balancer %}
+    SetEnvIf X-Forwarded-Proto https HTTPS=on
+    RedirectMatch 200 /health
+{% endif %}
+
+    <Directory "{{ ag_wordpress.basedir }}">
+        Require all granted
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Order allow,deny
+        Allow from all
+    </Directory>
+</VirtualHost>

@@ -1,0 +1,44 @@
+---
+# defaults file for adriagalin.wordpress
+ag_wordpress:
+  version: 4.8
+  checksum: sha1:3738189a1f37a03fb9cb087160b457d7a641ccb4
+  phpversion: 7.1
+  phprepo: ppa:ondrej/php
+  basedir: /var/www/html/wordpress
+  apache: yes
+  nginx: no
+  servername: localhost
+  docker_env: false
+
+ag_wordpress_apache:
+  servername: localhost
+  serveralias: localhost
+  external_load_balancer: false
+  custom_template: apache.wordpress.conf.j2 #path for the custom template
+
+ag_wordpress_nginx:
+  servername: localhost
+  serveralias: localhost
+  external_load_balancer: false
+  custom_template: nginx.wordpress.conf.j2 #path for the custom template
+
+# pgsql
+ag_wordpress_database:
+  driver: mysql
+  hostname: localhost
+  dbname: wordpress
+  username: random
+  password: secret
+  port: null
+  prefix: null
+
+ag_wordpress_database_pgsql:
+  install: false
+  version: 9.6
+  external: false
+
+ag_wordpress_database_mysql:
+  install: false
+  version: 5.7
+  external: false

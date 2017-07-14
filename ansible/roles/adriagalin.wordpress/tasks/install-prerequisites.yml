@@ -1,0 +1,52 @@
+---
+- name: wordpress | Install application prerequisites
+  apt:
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+  with_items:
+    - curl
+    - python-software-properties
+    - software-properties-common
+    - python-apt
+
+- name: wordpress | Add php repository
+  apt_repository:
+    repo: "{{ ag_wordpress.phprepo }}"
+    state: present
+    update_cache: yes
+
+- name: wordpress | Install php
+  apt:
+    name: "php{{ ag_wordpress.phpversion }}"
+    state: latest
+    update_cache: yes
+
+- name: wordpress | Install php base packages
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - php-pear
+    - php-apcu
+    - php-db
+    - php{{ ag_wordpress.phpversion }}-mcrypt
+    - php{{ ag_wordpress.phpversion }}-cli
+    - php{{ ag_wordpress.phpversion }}-intl
+    - php{{ ag_wordpress.phpversion }}-readline
+    - php{{ ag_wordpress.phpversion }}-xml
+    - php{{ ag_wordpress.phpversion }}-mbstring
+    - php{{ ag_wordpress.phpversion }}-gd
+    - php{{ ag_wordpress.phpversion }}-dev
+
+- name: wordpress | Set php client version
+  file: src=/usr/bin/php{{ ag_wordpress.phpversion }} dest=/etc/alternatives/php state=link force=yes
+
+- name: wordpress | Install php mysql packages
+  apt: name=php-mysql state=present update_cache=yes
+  when: ag_wordpress_database.driver == "mysql"
+
+- name: wordpress | Install php postgresql packages
+  apt: name=php{{ ag_wordpress.phpversion }}-pgsql state=present update_cache=yes
+  when: ag_wordpress_database.driver == "pgsql"

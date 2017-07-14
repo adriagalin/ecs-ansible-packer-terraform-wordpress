@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -e
+
+test -f {{ ag_wordpress.basedir }}/index.php || mv /tmp/wordpress/* {{ ag_wordpress.basedir }}
+sed -i "s|define('DB_HOST', 'localhost');|define('DB_HOST', '$WORDPRESS_DB_HOST');|;" "{{ ag_wordpress.basedir }}/wp-config.php"
+sed -i "s|define('DB_NAME', 'database_name_here');|define('DB_NAME', '$WORDPRESS_DB_NAME');|;" "{{ ag_wordpress.basedir }}/wp-config.php"
+sed -i "s|define('DB_USER', 'username_here');|define('DB_USER', '$WORDPRESS_DB_USER');|;" "{{ ag_wordpress.basedir }}/wp-config.php"
+sed -i "s|define('DB_PASSWORD', 'password_here');|define('DB_PASSWORD', '$WORDPRESS_DB_PASSWORD');|;" "{{ ag_wordpress.basedir }}/wp-config.php"
+
+exec "$@"

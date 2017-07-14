@@ -1,0 +1,17 @@
+---
+# tasks file for adriagalin.wordpress
+- include: install-prerequisites.yml
+
+- include: mysql.yml
+  when: (ag_wordpress_database_mysql.install or ag_wordpress_database_mysql.external) and not ag_wordpress_database_pgsql.install
+
+- include: postgresql.yml
+  when: (ag_wordpress_database_pgsql.install or ag_wordpress_database_pgsql.external) and not ag_wordpress_database_mysql.install
+
+- include: apache.yml
+  when: ag_wordpress.apache and not ag_wordpress.nginx
+
+- include: nginx.yml
+  when: ag_wordpress.nginx and not ag_wordpress.apache
+
+- include: wordpress.yml

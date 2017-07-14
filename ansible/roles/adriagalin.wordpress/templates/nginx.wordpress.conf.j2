@@ -1,0 +1,28 @@
+server {
+    server_name  {{ ag_wordpress_nginx.servername }};
+    listen 80;
+
+    root "{{ ag_wordpress.basedir }}";
+    index index.php;
+
+{% if ag_wordpress_nginx.external_load_balancer %}
+    location /health {
+        access_log off;
+        return 200 'A-OK!';
+        add_header Content-Type text/plain;
+    }
+{% endif %}
+
+    location / {
+      try_files $uri /index.php$is_args$args;
+    }
+
+    location ~ \.php$ {
+                include fastcgi_params;
+                fastcgi_pass unix:/var/run/php/php{{ ag_wordpress.phpversion }}-fpm.sock;
+                fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+                fastcgi_index index.php;
+                fastcgi_keep_conn on;
+                add_header Strict-Transport-Security max-age=15768000;
+    }
+}

@@ -1,0 +1,45 @@
+---
+- name: wordpress | Install mysql client
+  apt:
+    name: mysql-client-{{ ag_wordpress_database_mysql.version }}
+    state: latest
+    update_cache: yes
+  when: ag_wordpress_database_mysql.external or ag_wordpress_database_mysql.install
+
+- name: wordpress | Install mysql server
+  apt:
+    name: mysql-{{ ag_wordpress_database_pgsql.version }}
+    state: latest
+    update_cache: yes
+  with_items:
+    - mysql-server-{{ ag_wordpress_database_mysql.version }}
+    - mysql-common
+  when: not ag_wordpress_database_mysql.external and ag_wordpress_database_mysql.install
+
+- name: wordpress | Update mysql root password for all root accounts
+  mysql_user:
+    name: root
+    host: "{{ item }}"
+    password: "root"
+    priv: "*.*:ALL,GRANT"
+  with_items:
+    - "{{ ansible_hostname }}"
+    - 127.0.0.1
+    - ::1
+    - localhost
+  when: not ag_wordpress_database_mysql.external and ag_wordpress_database_mysql.install
+
+- name: wordpress | Create wordpress mysql database
+  mysql_db:
+    name: "{{ ag_wordpress_database.dbname }}"
+    state: present
+  when: not ag_wordpress_database_mysql.external and ag_wordpress_database_mysql.install
+
+- name: wordpress | Create wordpress mysql user
+  mysql_user:
+    name: "{{ ag_wordpress_database.username }}"
+    password: "{{ ag_wordpress_database.secret }}"
+    priv: "{{ ag_wordpress_database.dbname }}.*:ALL"
+    state: present
+    append_privs: yes
+  when: not ag_wordpress_database_mysql.external and ag_wordpress_database_mysql.install

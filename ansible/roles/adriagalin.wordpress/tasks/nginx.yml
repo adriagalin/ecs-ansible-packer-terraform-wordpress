@@ -1,0 +1,76 @@
+---
+- name: wordpress | Remove apache2 if exists
+  apt:
+    name: apache2*
+    state: absent
+
+- name: Ensure APT official nginx key
+  apt_key:
+    url: http://nginx.org/keys/nginx_signing.key
+  #when: ansible_os_family == 'Debian'
+
+- name: wordpress | Ensure APT official nginx repository (mainline)
+  apt_repository:
+    repo: "deb http://nginx.org/packages/mainline/{{ ansible_distribution|lower }}/ {{ ansible_distribution_release }} nginx"
+  #when: ansible_os_family == 'Debian'
+
+- name: wordpress | Install php-fpm
+  apt:
+    name: "php{{ ag_wordpress.phpversion }}-fpm"
+    state: present
+    update_cache: yes
+
+- name: wordpress | Install nginx
+  apt:
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+  with_items:
+    - python-selinux
+    - nginx
+
+- name: wordpress | Ensure php5-fpm cgi.fix_pathinfo=0
+  lineinfile:
+    dest: "/etc/php/{{ ag_wordpress.phpversion }}/fpm/php.ini"
+    regexp: '^(.*)cgi.fix_pathinfo='
+    line: cgi.fix_pathinfo=0
+  notify:
+    - restart-php-fpm
+    - restart-nginx
+
+- name: wordpress | Ensure php5-fpm default pool
+  lineinfile:
+    dest: "/etc/php/{{ ag_wordpress.phpversion }}/fpm/pool.d/www.conf"
+    regexp: '^(.*)listen.owner ='
+    line: listen.owner = nginx
+  notify:
+    - restart-php-fpm
+    - restart-nginx
+
+- name: wordpress | Ensure php5-fpm default pool
+  lineinfile:
+    dest: "/etc/php/{{ ag_wordpress.phpversion }}/fpm/pool.d/www.conf"
+    regexp: '^(.*)listen.group ='
+    line: listen.group = nginx
+  notify:
+    - restart-php-fpm
+    - restart-nginx
+
+- name: wordpress | Ensure php5-fpm default pool
+  lineinfile:
+    dest: "/etc/php/{{ ag_wordpress.phpversion }}/fpm/pool.d/www.conf"
+    regexp: '^(.*)listen.mode ='
+    line: listen.mode = 0666
+  notify:
+    - restart-php-fpm
+    - restart-nginx
+
+- name: wordpress | Set nginx wordpress.conf
+  template:
+    src: "{{ ag_wordpress_nginx.custom_template|default('nginx.wordpress.conf.j2') }}"
+    dest: /etc/nginx/conf.d/wordpress.conf
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+  notify: reload-nginx

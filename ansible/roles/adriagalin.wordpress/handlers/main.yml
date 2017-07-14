@@ -1,0 +1,17 @@
+---
+# handlers file for adriagalin.wordpress
+
+- name: restart-apache2
+  service: name=apache2 state=restarted
+
+- name: reload-apache2
+  service: name=apache2 state=reloaded
+
+- name: reload-nginx
+  service: name=nginx state=reloaded
+
+- name: restart-php-fpm
+  service: name="php{{ ag_wordpress.phpversion }}-fpm" state=restarted
+
+- name: restart-nginx
+  service: name=nginx state=restarted

@@ -1,0 +1,40 @@
+---
+- name: wordpress | Remove nginx if exists
+  apt:
+    name: nginx*
+    state: absent
+
+- name: wordpress | Install apache2
+  apt:
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+  with_items:
+    - apache2
+    - "libapache2-mod-php{{ ag_wordpress.phpversion }}"
+
+- name: wordpress | a2enmod rewrite
+  command: a2enmod rewrite
+  args:
+    creates: /etc/apache2/mods-enabled/rewrite.load
+  notify: restart-apache2
+
+- name: wordpress | Set apache's wordpress.conf
+  template:
+    src: "{{ ag_wordpress_apache.custom_template|default('apache.wordpress.conf.j2') }}"
+    dest: /etc/apache2/sites-available/wordpress.conf
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+  notify: reload-apache2
+
+- name: wordpress | a2ensite wordpress
+  command: a2ensite wordpress.conf
+  args:
+    creates: /etc/apache2/sites-enabled/wordpress.conf
+  notify: reload-apache2
+
+- name: wordpress | a2dissite 000-default
+  command: /usr/sbin/a2dissite 000-default
+  notify: reload-apache2
