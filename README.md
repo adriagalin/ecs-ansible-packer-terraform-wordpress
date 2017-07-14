@@ -8,7 +8,7 @@ The goal is to setup a wordpress container on an ECS cluster using tools like te
 
 ### What you have done?
 
-### How run your project? or Getting Started
+### How run your project?
 
 ### How components interact between each over?
 
