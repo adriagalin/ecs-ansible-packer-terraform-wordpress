@@ -4,7 +4,7 @@ SERVICE:=wordpress
 ANSIBLE_ROLES_PATH:=ansible/roles
 AWS_PROFILE:=default
 AWS_REGION:=eu-west-1
-TERRAFORM_PATH:=terraform/environments/prod
+TERRAFORM_PATH:=terraform/environments/eu-west
 TERRARUNNER=cd $(TERRAFORM_PATH) && terraform
 
 .PHONY: check
