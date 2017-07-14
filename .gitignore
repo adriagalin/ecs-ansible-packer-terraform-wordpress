@@ -83,4 +83,7 @@ tags
 !.vscode/launch.json
 !.vscode/extensions.json
 
+### Vagrant ###
+.vagrant/
+
 # End of https://www.gitignore.io/api/osx,vim,linux,packer,ansible,terraform,visualstudiocode
