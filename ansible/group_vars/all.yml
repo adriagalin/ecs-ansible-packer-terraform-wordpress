@@ -1,0 +1,26 @@
+---
+ag_wordpress:
+  version: 4.8
+  checksum: sha1:3738189a1f37a03fb9cb087160b457d7a641ccb4
+  phpversion: 7.1
+  phprepo: ppa:ondrej/php
+  basedir: /var/www/html/wordpress
+  apache: true
+  nginx: false
+  servername: localhost
+  docker_env: true
+
+ag_wordpress_apache:
+  servername: localhost
+  serveralias: localhost
+  external_load_balancer: true
+  custom_template: apache.wordpress.conf.j2 #path for the custom template
+
+ag_wordpress_database:
+  driver: mysql
+  hostname: localhost
+  dbname: wordpress
+  username: wordpress
+  password: s3cr3ts3cr3t
+  port: null
+  prefix: null

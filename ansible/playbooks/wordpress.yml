@@ -1,0 +1,7 @@
+---
+- hosts: all
+  become: yes
+
+  roles:
+    - yatesr.timezone
+    - adriagalin.wordpress
