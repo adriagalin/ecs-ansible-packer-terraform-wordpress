@@ -36,25 +36,26 @@ exec:
 
 .PHONY: plan create-registry create-all wordpress
 plan: check-env
-	$(TERRARUNNER) plan
+	@$(TERRARUNNER) plan
 
 apply: check-env
-	$(TERRARUNNER) apply
+	@$(TERRARUNNER) apply
 
 destroy: check-env
-	$(TERRARUNNER) destroy
+	@$(TERRARUNNER) destroy
 
 create-registry: check-env
-	$(TERRARUNNER) apply -target=module.ecs_registry
-	$(TERRARUNNER) output ecr_repository
+	@$(TERRARUNNER) apply -target=module.ecs_registry
+	@$(TERRARUNNER) output ecr_repository
 
 create-all: check-env create-registry build
-	$(TERRARUNNER) apply
-	$(TERRARUNNER) output elb_dns
+	@$(TERRARUNNER) apply
+	@echo "Wait few minutes and then go to:"
+	@$(TERRARUNNER) output elb_dns
 
 wordpress: check-env
-	# $(TERRARUNNER) apply -var 'service_image_tag=$(VERSION)' -target=module.wordpress_service
-	$(TERRARUNNER) apply -target=module.wordpress_service
+	@# $(TERRARUNNER) apply -var 'service_image_tag=$(VERSION)' -target=module.wordpress_service
+	@$(TERRARUNNER) apply -target=module.wordpress_service
 
 check-env: guard-AWS_DEFAULT_PROFILE guard-AWS_DEFAULT_REGION
 guard-%:
