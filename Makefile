@@ -34,7 +34,7 @@ run:
 exec:
 	docker run --rm -it $(IMAGE) bash
 
-.PHONY: plan create-registry create-all wordpress
+.PHONY: plan apply destroy get create-registry create-all wordpress
 plan: check-env
 	@$(TERRARUNNER) plan
 
@@ -44,11 +44,14 @@ apply: check-env
 destroy: check-env
 	@$(TERRARUNNER) destroy
 
+get: check-env
+	@$(TERRARUNNER) get
+
 create-registry: check-env
 	@$(TERRARUNNER) apply -target=module.ecs_registry
 	@$(TERRARUNNER) output ecr_repository
 
-create-all: check-env create-registry build
+create-all: check-env get create-registry build
 	@$(TERRARUNNER) apply
 	@echo "Wait few minutes and then go to:"
 	@$(TERRARUNNER) output elb_dns
