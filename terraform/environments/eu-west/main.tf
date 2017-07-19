@@ -1,3 +1,4 @@
+// TODO: Add tfvars file with all variables
 /* START NETWORK ------------------------------- */
 module "vpc" {
   source = "../../modules/network/vpc"
@@ -89,11 +90,12 @@ module "security_group_elb_group_rule_egress" {
   from_port = 80
   to_port = 80
   protocol = "tcp"
-  cidr_blocks = [
-    "${module.private_subnet_az1.aws_subnet_cidr_block}",
-    "${module.private_subnet_az2.aws_subnet_cidr_block}",
-    "${module.private_subnet_az3.aws_subnet_cidr_block}"
-  ]
+  cidr_blocks = ["0.0.0.0/0"]
+  # cidr_blocks = [
+  #   "${module.private_subnet_az1.aws_subnet_cidr_block}",
+  #   "${module.private_subnet_az2.aws_subnet_cidr_block}",
+  #   "${module.private_subnet_az3.aws_subnet_cidr_block}"
+  # ]
   security_group_id = "${module.security_group_elb.aws_security_group_id}"
 }
 
@@ -132,23 +134,23 @@ module "security_group_ecs_group_rule_allow_80" {
   cidr_blocks = ["0.0.0.0/0"]
   security_group_id = "${module.security_group_ecs_instances.aws_security_group_id}"
 }
-module "security_group_ecs_group_rule_allow_22" {
-  source = "../../modules/security-groups/rule"
-  type = "ingress"
-  from_port = 22
-  to_port = 22
-  protocol = "tcp"
-  # cidr_blocks = ["0.0.0.0/0"]
-  cidr_blocks = [
-    "${module.public_subnet_az1.aws_subnet_cidr_block}",
-    "${module.public_subnet_az2.aws_subnet_cidr_block}",
-    "${module.public_subnet_az3.aws_subnet_cidr_block}",
-    "${module.private_subnet_az1.aws_subnet_cidr_block}",
-    "${module.private_subnet_az2.aws_subnet_cidr_block}",
-    "${module.private_subnet_az3.aws_subnet_cidr_block}"
-  ]
-  security_group_id = "${module.security_group_ecs_instances.aws_security_group_id}"
-}
+# module "security_group_ecs_group_rule_allow_22" {
+#   source = "../../modules/security-groups/rule"
+#   type = "ingress"
+#   from_port = 22
+#   to_port = 22
+#   protocol = "tcp"
+#   # cidr_blocks = ["0.0.0.0/0"]
+#   cidr_blocks = [
+#     "${module.public_subnet_az1.aws_subnet_cidr_block}",
+#     "${module.public_subnet_az2.aws_subnet_cidr_block}",
+#     "${module.public_subnet_az3.aws_subnet_cidr_block}",
+#     "${module.private_subnet_az1.aws_subnet_cidr_block}",
+#     "${module.private_subnet_az2.aws_subnet_cidr_block}",
+#     "${module.private_subnet_az3.aws_subnet_cidr_block}"
+#   ]
+#   security_group_id = "${module.security_group_ecs_instances.aws_security_group_id}"
+# }
 module "security_group_ecs_group_egress_rule_allow_all" {
   source = "../../modules/security-groups/rule"
   type = "egress"
@@ -218,7 +220,7 @@ module "ecs_cluster" {
     "${module.private_subnet_az2.aws_subnet_id}",
     "${module.private_subnet_az3.aws_subnet_id}"
   ]
-  ecs_aws_autoscaling_group_min_size = 1
+  ecs_aws_autoscaling_group_min_size = 2
   ecs_aws_autoscaling_group_max_size = 5
   ecs_aws_autoscaling_group_desired_capacity  = 2
 }
