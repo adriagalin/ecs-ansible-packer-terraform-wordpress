@@ -1,4 +1,7 @@
-# // TODO: Create generic services, add terraform remote state and then gets iam_role_service, cluster ecs, rds etc
+// TODO: Create generic services, add terraform remote state and then gets iam_role_service, cluster ecs, rds etc
+// TODO: Add tfvars file with all variables
+variable "service_image_tag" { default = "latest" }
+
 module "wordpress_service" {
   source = "../../modules/ecs-cluster/service-wordpress"
   name = "wordpress"
@@ -15,10 +18,10 @@ module "wordpress_service" {
 
   service_name = "wordpress"
   service_essential = true
-  service_memory = 500
-  service_cpu = 512
+  service_memory = 300
+  service_cpu = 400
   service_repository_url = "${module.ecs_registry.url}"
-  service_image_tag = "latest"
+  service_image_tag = "${var.service_image_tag}"
   service_command = "apachectl -D FOREGROUND"
   service_container_path = "/var/www/html/wordpress/"
   service_source_volume = "efs-data"
