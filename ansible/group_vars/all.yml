@@ -9,12 +9,13 @@ ag_wordpress:
   nginx: false
   servername: localhost
   docker_env: true
+  disable_ftp: true
 
 ag_wordpress_apache:
   servername: localhost
   serveralias: localhost
   external_load_balancer: true
-  custom_template: apache.wordpress.conf.j2 #path for the custom template
+  custom_template: apache.wordpress.conf.j2
 
 ag_wordpress_database:
   driver: mysql

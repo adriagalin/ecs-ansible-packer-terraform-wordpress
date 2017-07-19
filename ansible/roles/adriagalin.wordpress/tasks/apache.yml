@@ -24,7 +24,7 @@
     src: "{{ ag_wordpress_apache.custom_template|default('apache.wordpress.conf.j2') }}"
     dest: /etc/apache2/sites-available/wordpress.conf
     owner: root
-    group: root
+    group: www-data
     mode: 0644
     backup: yes
   notify: reload-apache2

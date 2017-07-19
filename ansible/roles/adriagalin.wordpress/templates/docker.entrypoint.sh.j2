@@ -1,7 +1,21 @@
 #!/usr/bin/env bash
 set -e
 
+# copy wordpress files if it's necessary
 test -f {{ ag_wordpress.basedir }}/index.php || mv /tmp/wordpress/* {{ ag_wordpress.basedir }}
+
+# set wordpress base permissions
+chown www-data:www-data -R {{ ag_wordpress.basedir }}
+find {{ ag_wordpress.basedir }} -type d -exec chmod 755 {} \;
+find {{ ag_wordpress.basedir }} -type f -exec chmod 644 {} \;
+# allows wordpress to manage wp-config.php file
+chmod 660 {{ ag_wordpress.basedir }}/wp-config.php
+# allows wordpress to manage wp-content
+chown www-data:www-data -R {{ ag_wordpress.basedir }}/wp-content
+find {{ ag_wordpress.basedir }}/wp-content -type d -exec chmod 755 {} \;
+find {{ ag_wordpress.basedir }}/wp-content -type f -exec chmod 644 {} \;
+
+# set db config
 sed -i "s|define('DB_HOST', 'localhost');|define('DB_HOST', '$WORDPRESS_DB_HOST');|;" "{{ ag_wordpress.basedir }}/wp-config.php"
 sed -i "s|define('DB_NAME', 'database_name_here');|define('DB_NAME', '$WORDPRESS_DB_NAME');|;" "{{ ag_wordpress.basedir }}/wp-config.php"
 sed -i "s|define('DB_USER', 'username_here');|define('DB_USER', '$WORDPRESS_DB_USER');|;" "{{ ag_wordpress.basedir }}/wp-config.php"

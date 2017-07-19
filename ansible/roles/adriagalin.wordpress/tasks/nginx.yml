@@ -70,7 +70,7 @@
     src: "{{ ag_wordpress_nginx.custom_template|default('nginx.wordpress.conf.j2') }}"
     dest: /etc/nginx/conf.d/wordpress.conf
     owner: root
-    group: root
+    group: www-data
     mode: 0644
     backup: yes
   notify: reload-nginx

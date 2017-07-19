@@ -47,6 +47,14 @@ define('DB_HOST', 'localhost');
 define('DB_HOST', '{{ ag_wordpress_database.hostname }}');
 {% endif %}
 
+/** Disable FTP */
+{% if ag_wordpress.disable_ftp %}
+define('FS_METHOD', 'direct');
+define('FTP_BASE', '{{ ag_wordpress.basedir }}/');
+define('FTP_CONTENT_DIR', '{{ ag_wordpress.basedir }}/wp-content/');
+define('FTP_PLUGIN_DIR ', '{{ ag_wordpress.basedir }}/plugins/');
+{% endif %}
+
 /** Database Charset to use in creating database tables. */
 define('DB_CHARSET', 'utf8');
 

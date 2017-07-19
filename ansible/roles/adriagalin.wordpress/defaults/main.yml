@@ -10,6 +10,7 @@ ag_wordpress:
   nginx: no
   servername: localhost
   docker_env: false
+  disable_ftp: true
 
 ag_wordpress_apache:
   servername: localhost
