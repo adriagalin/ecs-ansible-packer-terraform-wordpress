@@ -35,10 +35,10 @@ exec:
 	docker run --rm -it $(IMAGE) bash
 
 .PHONY: plan apply destroy get create-registry create-all wordpress
-plan: check-env
+plan: get
 	@$(TERRARUNNER) plan
 
-apply: check-env
+apply: get
 	@$(TERRARUNNER) apply
 
 destroy: check-env
@@ -57,8 +57,7 @@ create-all: check-env get create-registry build
 	@$(TERRARUNNER) output elb_dns
 
 wordpress: check-env
-	@# $(TERRARUNNER) apply -var 'service_image_tag=$(VERSION)' -target=module.wordpress_service
-	@$(TERRARUNNER) apply -target=module.wordpress_service
+	@$(TERRARUNNER) apply -target=module.wordpress_service -var 'service_image_tag=$(VERSION)'
 
 check-env: guard-AWS_DEFAULT_PROFILE guard-AWS_DEFAULT_REGION
 guard-%:
