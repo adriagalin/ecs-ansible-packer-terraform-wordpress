@@ -20,7 +20,7 @@ Finally to run the whole stack, I have created a Makefile with some commands tha
 
 **Note:** Tested on Mac OS X system.
 
-1. Create or use existing IAM user with API access. Or singup to [AWS account](https://aws.amazon.com/) and create user with API access.
+1. Create or use existing IAM user with API access. Or sign up to [AWS account](https://aws.amazon.com/) and create user with API access.
 
 2. Clone the repo.
     ```bash
