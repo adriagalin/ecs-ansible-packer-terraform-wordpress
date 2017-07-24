@@ -74,6 +74,10 @@ Finally to run the whole stack, I have created a Makefile with some commands tha
     ```
     ***IMAGE_TAG** can be a commit short hash (git rev-parse --short HEAD)
 
+8. Finally, execute this command to destroy the entire platform stack on AWS:
+    ```bash
+    make destroy
+
 ### How components interact between each over?
 
 Firstly, I set up an ECR registry for docker images. Then, I built the packer template based on Ubuntu 16.04 docker image with 4 provisioners; a local shell script that install Ansible roles, then a shell script that installs Ansible, also an Ansible playbook that sets up the timezone and installs wordpress, and finally a cleanup shell script that removes ansible and clears off unused ansible tmp files to save a few space in the resulting docker image. The docker post-processor generate a tagged image and then upload to ECR registry.
