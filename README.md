@@ -74,9 +74,10 @@ Finally to run the whole stack, I have created a Makefile with some commands tha
     ```
     ***IMAGE_TAG** can be a commit short hash (git rev-parse --short HEAD)
 
-8. Finally, execute this command to destroy the entire platform stack on AWS:
+8. Finally, execute this command to tear down the infrastructure:
     ```bash
     make destroy
+    ```
 
 ### How components interact between each over?
 
