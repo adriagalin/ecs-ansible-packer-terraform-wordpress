@@ -1,18 +1,16 @@
-variable "vpc_cidr" { default = "172.31.0.0/16" }
-variable "enable_dns_hostnames" { default = true }
-variable "tag_name" {}
-
-resource "aws_vpc" "main" {
-  cidr_block = "${var.vpc_cidr}"
+resource "aws_vpc" "vpc" {
+  cidr_block = "${var.cidr_block}"
   enable_dns_hostnames = "${var.enable_dns_hostnames}"
-  tags {
-    Name = "${var.tag_name}"
-  }
+  tags = "${merge(map(
+    "Name", "${var.cluster_name}-vpc",
+    "Cluster", "${var.cluster_id}"
+  ), var.extra_tags)}"
 }
 
-resource "aws_internet_gateway" "main" {
-  vpc_id = "${aws_vpc.main.id}"
-  tags {
-    Name = "${var.tag_name} gw"
-  }
+resource "aws_internet_gateway" "igw" {
+  vpc_id = "${aws_vpc.vpc.id}"
+  tags = "${merge(map(
+    "Name", "${var.cluster_name}-igw",
+    "Cluster", "${var.cluster_id}"
+  ), var.extra_tags)}"
 }
